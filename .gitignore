@@ -1,0 +1,32 @@
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# macOS
+.DS_Store
+
+# dotnet
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.swp
+*.*~
