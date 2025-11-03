@@ -1,16 +1,32 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using TaskManager.API.Data;
 using TaskManager.API.Services;
+using TaskManager.API.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Add security definition (shows the Authorize button)
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter your JWT token"
+    });
+
+    // Apply the custom filter (only adds lock icon to [Authorize] endpoints)
+    options.OperationFilter<AuthorizeOperationFilter>();
+});
 
 // Configure Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -18,6 +34,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Register AuthService
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<TaskService>();
+
 
 // Configure CORS (for Angular frontend)
 builder.Services.AddCors(options =>
